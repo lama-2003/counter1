@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Portfolio</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<style>
+    
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    line-height: 1.6;
+    color: #333;
+    background-color: #f9f9f9;
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Header Styles */
+header {
+    background-color: #2c3e50;
+    color: white;
+    padding: 20px 0;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+header h1 {
+    margin-bottom: 10px;
+    font-size: 2rem;
+}
+
+nav ul {
+    display: flex;
+    list-style: none;
+}
+
+nav ul li {
+    margin-right: 20px;
+}
+
+nav ul li a {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s;
+}
+
+nav ul li a:hover {
+    color: #3498db;
+}
+
+/* Main Content Styles */
+main {
+    margin-top: 100px;
+    padding: 40px 0;
+}
+
+.section {
+    padding: 60px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.section:last-child {
+    border-bottom: none;
+}
+
+h2 {
+    font-size: 2rem;
+    margin-bottom: 30px;
+    color: #2c3e50;
+    position: relative;
+}
+
+h2::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    width: 60px;
+    height: 3px;
+    background-color: #3498db;
+}
+
+/* About Section */
+.about-content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    align-items: center;
+}
+
+.about-text {
+    flex: 1;
+    min-width: 300px;
+}
+
+
+
+
+
+.contact-methods {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+}
+
+.contact-info, .social-links {
+    flex: 1;
+    min-width: 300px;
+}
+
+.contact-info p {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+}
+
+.contact-info i {
+    margin-right: 10px;
+    color: #3498db;
+    width: 20px;
+    text-align: center;
+}
+
+.social-links a {
+    display: block;
+    margin-bottom: 15px;
+    color: #2c3e50;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.social-links a:hover {
+    color: #3498db;
+}
+
+.social-links i {
+    margin-right: 10px;
+    width: 20px;
+    text-align: center;
+}
+
+
+footer {
+    background-color: #2c3e50;
+    color: white;
+    text-align: center;
+    padding: 20px 0;
+    margin-top: 40px;
+}
+
+
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 1.5rem;
+    }
+    
+    nav ul {
+        flex-direction: column;
+    }
+    
+    nav ul li {
+        margin-right: 0;
+        margin-bottom: 5px;
+    }
+    
+    main {
+        margin-top: 140px;
+    }
+    
+    .about-content, .contact-methods {
+        flex-direction: column;
+    }
+}
+</style>
+<body>
+    <header>
+        <div class="container">
+            <h1>Welcome to My Portfolio🫶🏻</h1>
+            <nav>
+                <ul>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#application">My Application</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section id="about" class="section">
+            <div class="container">
+                <h2>About Me</h2>
+                <div class="about-content">
+                    <div class="about-text"><p>
+I am Lama Suleiman, a fourth-year student at Al-Azhar University – Gaza, studying Software Engineering. I am applying for this program to develop my skills in JavaScript and expand my knowledge through practical projects that reflect real-world challenges. I believe this experience will help me build a strong portfolio and increase my readiness for the job market in web development.
+
+I have completed several projects using HTML, CSS, JavaScript, PHP, and Laravel, including a login/logout interface project for the MikroTik Hotspot system. This has helped me enhance my technical skills and understand how to transform theoretical concepts into practical applications. Through this program, I aim to improve my problem-solving abilities and work on real-world projects that will add genuine value to my professional career.
+
+</p>.</p>
+                
+
+        <section id="application" class="section">
+            <div class="container">
+                <h2>Why I'm Applying</h2>
+                <p>
+I am applying for this program because I want to improve my JavaScript skills and apply what I learn in practical projects that will help develop my technical abilities. I believe this opportunity will help me build a strong portfolio and better prepare myself for the job market in web development.
+
+I am looking forward to developing my problem-solving abilities and working on real-world projects. Through my previous projects using HTML, CSS, JavaScript, PHP, and Laravel, such as the login/logout interface project for the MikroTik Hotspot system, I have learned how to apply theoretical concepts into practical projects and enhance my programming and problem-solving skills. I believe this experience will be valuable in the program.</p>
+            </div>
+        </section>
+
+        <section id="contact" class="section">
+            <div class="container">
+                <h2>Contact Me</h2>
+                <div class="contact-methods">
+                    <div class="contact-info">
+                        <p><i class="fas fa-envelope"></i> Email: lamajamal642@gmail.com</p>
+                        <p><i class="fas fa-phone"></i> Phone: +970 595401482</p>
+                        <p><i class="fas fa-map-marker-alt"></i> Location: GAZA, KhanYounis</p>
+                    </div>
+                    <div class="social-links">
+                        <a href="https://github.com/lama-2003" target="_blank"><i class="fab fa-github"></i> GitHub</a>
+                        
+<a href="https://www.instagram.com/lama.suleiman1" target="_blank"><i class="fab fa-instagram"></i> Instagram</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 My Portfolio. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>
