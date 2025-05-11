@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blackjack Game</title>
+    <style>
+        body {
+            font-family: 'Trebuchet MS', sans-serif;
+            background-color: #076324;
+            color: white;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            color: goldenrod;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        #game-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .hand {
+            display: inline-block;
+            width: 45%;
+            margin: 10px;
+            vertical-align: top;
+            background-color: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            min-height: 200px;
+        }
+
+        .cards {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            min-height: 120px;
+        }
+
+        .card {
+            width: 80px;
+            height: 120px;
+            background-color: white;
+            color: black;
+            border-radius: 5px;
+            margin: 5px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        .card.red {
+            color: red;
+        }
+
+        .card-value {
+            font-size: 1.8em;
+        }
+
+        .card-suit {
+            font-size: 1.2em;
+        }
+
+        .score {
+            font-size: 1.3em;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+
+        .buttons {
+            margin: 20px 0;
+        }
+
+        button {
+            padding: 12px 25px;
+            margin: 0 10px;
+            background-color: goldenrod;
+            color: #016f32;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+        }
+
+        button:hover {
+            background-color: gold;
+        }
+
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        #result {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin: 20px 0;
+            min-height: 30px;
+            color: gold;
+        }
+
+        #balance {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+        }
+
+        .bet-controls {
+            margin: 15px 0;
+        }
+
+        .bet-controls input {
+            padding: 8px;
+            width: 80px;
+            text-align: center;
+            font-size: 1em;
+        }
+
+        .hidden-card {
+            background: repeating-linear-gradient(
+                45deg,
+                #1a1a1a,
+                #1a1a1a 10px,
+                #333 10px,
+                #333 20px
+            );
+            color: white;
+        }
+
+        @media (max-width: 600px) {
+            .hand {
+                width: 100%;
+                display: block;
+            }
+            
+            .card {
+                width: 60px;
+                height: 90px;
+                font-size: 1.2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <h1>Blackjack</h1>
+        
+        <div id="balance">Balance: $<span id="balance-amount">1000</span></div>
+        
+        <div class="bet-controls" id="bet-controls">
+            <p>Place your bet:</p>
+            <input type="number" id="bet-amount" min="10" max="1000" value="50">
+            <button id="deal">Deal</button>
+        </div>
+        
+        <div id="game" style="display: none;">
+            <div class="hand" id="dealer-hand">
+                <h2>Dealer's Hand</h2>
+                <div class="cards" id="dealer-cards"></div>
+                <div class="score" id="dealer-score">Score: ?</div>
+            </div>
+            
+            <div class="hand" id="player-hand">
+                <h2>Your Hand</h2>
+                <div class="cards" id="player-cards"></div>
+                <div class="score" id="player-score">Score: 0</div>
+            </div>
+            
+            <div class="buttons">
+                <button id="hit">Hit</button>
+                <button id="stand">Stand</button>
+                <button id="double" disabled>Double</button>
+            </div>
+            
+            <div id="result"></div>
+        </div>
+    </div>
+
+    <script>
+        
+        const suits = ['♥', '♦', '♣', '♠'];
+        const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+        let deck = [];
+        let playerHand = [];
+        let dealerHand = [];
+        let playerScore = 0;
+        let dealerScore = 0;
+        let balance = 1000;
+        let currentBet = 0;
+        let gameInProgress = false;
+
+        
+        const balanceAmount = document.getElementById('balance-amount');
+        const betAmountInput = document.getElementById('bet-amount');
+        const dealButton = document.getElementById('deal');
+        const hitButton = document.getElementById('hit');
+        const standButton = document.getElementById('stand');
+        const doubleButton = document.getElementById('double');
+        const gameDiv = document.getElementById('game');
+        const betControls = document.getElementById('bet-controls');
+        const resultDiv = document.getElementById('result');
+
+        
+        function init() {
+            updateBalance();
+            setupEventListeners();
+        }
+        function setupEventListeners() {
+            dealButton.addEventListener('click', startGame);
+            hitButton.addEventListener('click', hit);
+            standButton.addEventListener('click', stand);
+            doubleButton.addEventListener('click', doubleDown);
+            
+        
+            betAmountInput.addEventListener('change', function() {
+                let bet = parseInt(this.value);
+                if (isNaN(bet) || bet < 10) {
+                    this.value = 10;
+                } else if (bet > balance) {
+                    this.value = balance;
+                }
+            });
+        }
+
+        
+        function createDeck() {
+            let deck = [];
+            for (let suit of suits) {
+                for (let value of values) {
+                    deck.push({suit: suit, value: value});
+                }
+            }
+            return shuffle(deck);
+        }
+
+        
+        function shuffle(deck) {
+            for (let i = deck.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [deck[i], deck[j]] = [deck[j], deck[i]];
+            }
+            return deck;
+        }
+
+        
+        function dealCard(hand) {
+            if (deck.length === 0) {
+                deck = createDeck();
+            }
+            let card = deck.pop();
+            hand.push(card);
+            return card;
+        }
+
+        
+        function calculateScore(hand) {
+            let score = 0;
+            let aceCount = 0;
+
+            for (let card of hand) {
+                if (card.value === 'A') {
+                    aceCount++;
+                    score += 11;
+                } else if (['K', 'Q', 'J'].includes(card.value)) {
+                    score += 10;
+                } else {
+                    score += parseInt(card.value);
+                }
+            }
+
+            
+            while (score > 21 && aceCount > 0) {
+                score -= 10;
+                aceCount--;
+            }
+
+            return score;
+        }
+
+        
+        function updateHandDisplay(handType, hand, hideFirstCard = false) {
+            const cardsDiv = document.getElementById(`${handType}-cards`);
+            cardsDiv.innerHTML = '';
+            
+            hand.forEach((card, index) => {
+                const cardDiv = document.createElement('div');
+                cardDiv.className = 'card';
+                
+                if (hideFirstCard && index === 0 && handType === 'dealer') {
+                    cardDiv.className += ' hidden-card';
+                    cardDiv.innerHTML = '<div class="card-value">?</div>';
+                } else {
+                    if (card.suit === '♥' || card.suit === '♦') {
+                        cardDiv.classList.add('red');
+                    }
+                    cardDiv.innerHTML = `
+                        <div class="card-value">${card.value}</div>
+                        <div class="card-suit">${card.suit}</div>
+                    `;
+                }
+                
+                cardsDiv.appendChild(cardDiv);
+            });
+        }
+
+        
+        function updateBalance() {
+            balanceAmount.textContent = balance;
+        }
+
+        
+        function startGame() {
+            currentBet = parseInt(betAmountInput.value);
+            
+            if (currentBet < 10 || currentBet > balance) {
+                alert('Please enter a valid bet amount (minimum $10, maximum your balance)');
+                return;
+            }
+            
+            
+            balance -= currentBet;
+            updateBalance();
+            
+            
+            deck = createDeck();
+            playerHand = [];
+            dealerHand = [];
+            playerScore = 0;
+            dealerScore = 0;
+            gameInProgress = true;
+            
+            
+            dealCard(playerHand);
+            dealCard(dealerHand);
+            dealCard(playerHand);
+            dealCard(dealerHand);
+            
+            
+            playerScore = calculateScore(playerHand);
+            dealerScore = calculateScore(dealerHand);
+            
+            
+            updateHandDisplay('player', playerHand);
+            updateHandDisplay('dealer', dealerHand, true);
+            
+            document.getElementById('player-score').textContent = `Score: ${playerScore}`;
+            document.getElementById('dealer-score').textContent = 'Score: ?';
+            
+            
+            gameDiv.style.display = 'block';
+            betControls.style.display = 'none';
+            
+            
+            hitButton.disabled = false;
+            standButton.disabled = false;
+            doubleButton.disabled = playerHand.length !== 2 || balance < currentBet;
+            
+            resultDiv.textContent = '';
+            
+        
+            if (playerScore === 21) {
+                setTimeout(() => {
+                    endGame('Blackjack! You win!', 1.5);
+                }, 500);
+            }
+        }
+
+        
+        function hit() {
+            if (!gameInProgress) return;
+            
+            dealCard(playerHand);
+            playerScore = calculateScore(playerHand);
+            updateHandDisplay('player', playerHand);
+            document.getElementById('player-score').textContent = `Score: ${playerScore}`;
+            
+            doubleButton.disabled = true;
+            
+            if (playerScore > 21) {
+                endGame('Bust! You lose.');
+            } else if (playerScore === 21) {
+                stand();
+            }
+        }
+
+        
+        function stand() {
+            if (!gameInProgress) return;
+            
+            gameInProgress = false;
+            
+            
+            updateHandDisplay('dealer', dealerHand);
+            dealerScore = calculateScore(dealerHand);
+            document.getElementById('dealer-score').textContent = `Score: ${dealerScore}`;
+            
+            
+            while (dealerScore < 17) {
+                dealCard(dealerHand);
+                dealerScore = calculateScore(dealerHand);
+                updateHandDisplay('dealer', dealerHand);
+                document.getElementById('dealer-score').textContent = `Score: ${dealerScore}`;
+            }
+            
+            
+            if (dealerScore > 21) {
+                endGame('Dealer busts! You win!', 1);
+            } else if (dealerScore > playerScore) {
+                endGame('Dealer wins!');
+            } else if (playerScore > dealerScore) {
+                endGame('You win!', 1);
+            } else {
+                endGame('Push! It\'s a tie.', 0);
+            }
+        }
+
+        
+        function doubleDown() {
+            if (!gameInProgress || playerHand.length !== 2 || balance < currentBet) return;
+            
+            
+            balance -= currentBet;
+            currentBet *= 2;
+            updateBalance();
+            
+            
+            hit();
+            if (playerScore <= 21) {
+                stand();
+            }
+        }
+
+        
+        function endGame(message, payoutMultiplier = 0) {
+            gameInProgress = false;
+            
+            
+            hitButton.disabled = true;
+            standButton.disabled = true;
+            doubleButton.disabled = true;
+            
+            
+            if (payoutMultiplier > 0) {
+                const winnings = Math.floor(currentBet * payoutMultiplier);
+                balance += currentBet + winnings;
+                updateBalance();
+                
+                if (payoutMultiplier === 1.5) {
+                    message += ` You win $${winnings}!`;
+                } else {
+                    message += ` You win $${winnings}!`;
+                }
+            } else if (payoutMultiplier === 0) {
+                
+                balance += currentBet;
+                updateBalance();
+            }
+            
+            resultDiv.textContent = message;
+            
+            
+            betControls.style.display = 'block';
+            betAmountInput.max = balance;
+            
+            
+            if (parseInt(betAmountInput.value) > balance) {
+                betAmountInput.value = Math.min(50, balance);
+            }
+        }
+
+        
+        window.onload = init;
+    </script>
+</body>
+</html>
